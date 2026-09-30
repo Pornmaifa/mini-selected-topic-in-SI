@@ -1,0 +1,114 @@
+<!-- reservation/templates/reservation/admin_dashboard.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+
+        <div class="d-flex align-items-center">
+            <a href="{% url 'dashboard' %}" class="arrow-left me-3">
+                <i class="bi bi-arrow-left fs-4 text-light"></i>
+            </a>
+            <a class="navbar-brand" href="#">Admin Dashboard</a>
+        </div>
+        
+        <div class="d-flex align-items-center ms-auto">
+            <span class="text-white me-3">สวัสดี, {{ profile.user.username }}</span>
+            <a href="{% url 'logout' %}" class="btn btn-danger">ออกจากระบบ</a>
+        </div>
+
+    </div>
+</nav>
+
+<div class="container mt-4">
+    {% if messages %}
+        <div class="mt-2">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+    <h3>ผู้ใช้งานทั้งหมด</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Staff</th>
+                <th>Superuser</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.is_staff }}</td>
+                <td>{{ user.is_superuser }}</td>
+                <td>
+                    {% if user != request.user %}
+                        <a href="{% url 'custom_admin_delete_user' user.id %}" 
+                            class="btn btn-sm btn-outline-danger"
+                            onclick="return confirm('คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้นี้?');">
+                            ลบ
+                        </a>
+                
+                {% else %}
+                    <span class="text-muted">ไม่สามารถลบตัวเองได้</span>
+                {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3>สถานที่ทั้งหมด</h3>
+
+    <div class="bg-white  border p-4 rounded shadow-sm border">
+    <div class="text-end mb-3">
+    <a href="{% url 'admin_add_place' %}" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> เพิ่มสถานที่ใหม่
+    </a>
+    </div>
+
+    <div class="row">
+        {% for place in places %}
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm">
+                {% with first_image=place.images.first %}
+                    {% if first_image %}
+                        <img src="{{ first_image.image.url }}" class="card-img-top" style="height:150px; object-fit:cover;">
+                    {% else %}
+                        <img src="{% static 'images/default-place.png' %}" class="card-img-top" style="height:150px; object-fit:cover;">
+                    {% endif %}
+                {% endwith %}
+                <div class="card-body">
+                    <a href="{% url 'location_detail' place.id %}" class="btn btn-sm btn-outline-info">รายละเอียด</a>
+
+                    <h5 class="card-title">{{ place.name }}</h5>
+                    <p class="card-text">{{ place.description|truncatechars:50 }}</p>
+                    <p class="text-muted small">รองรับ {{ place.capacity }} คน</p>
+                    <a href="{% url 'add_place_schedule' %}" class="btn btn-sm btn-primary ">เพิ่มวัน/เวลา</a>
+                    <a href="{% url 'admin_update_place1' place.id %}" class="btn btn-sm btn-warning">แก้ไข</a>
+                    <a href="{% url 'admin_delete_place' place.id %}" class="btn btn-sm btn-danger">ลบ</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

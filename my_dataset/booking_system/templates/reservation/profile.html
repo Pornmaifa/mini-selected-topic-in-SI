@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .profile-pic {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #dee2e6;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <h3 class="text-center mb-3">โปรไฟล์ของคุณ</h3>
+
+            <div class="text-center my-4">
+            {% if request.user.profile.avatar %}
+                <img src="{{ request.user.profile.avatar.url }}" class="rounded-circle" width="170" height="170" alt="Avatar">
+            {% else %}
+                <img src="/media/avatars/default-avatar.png" class="rounded-circle" width="170" height="170" alt="Default Avatar">
+            {% endif %}
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" name="username" class="form-control" id="username" value="{{ request.user.username }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control" id="email" value="{{ request.user.email }}">
+                </div>
+                <div class="mt-3 text-center">
+                    <a href="{% url 'profile_edit' %}" class="btn btn-warning w-100">แกไขโปรไฟล์</a>
+                </div>
+                <div class="mt-3 text-center">
+                    <button type="submit" class="btn btn-primary w-100">อัปเดตโปรไฟล์</button>
+                </div>
+            </form>
+
+            <div class="mt-3 text-center">
+                <a href="{% url 'dashboard' %}" class="btn btn-link">กลับไป Dashboard</a>
+                <a href="{% url 'logout' %}" class="btn btn-danger">ออกจากระบบ</a>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="text-center">
+                <h5 class="text-danger">โซนอันตราย</h5>
+                <p class="text-muted">การดำเนินการนี้ไม่สามารถย้อนกลับได้</p>
+                <button type="button" class="btn btn-outline-danger w-100" data-bs-toggle="modal" data-bs-target="#deactivateModal">
+                    ปิดการใช้งานบัญชี
+                </button>
+            </div>
+            </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deactivateModal" tabindex="-1" aria-labelledby="deactivateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deactivateModalLabel">ยืนยันการปิดใช้งานบัญชี</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                คุณแน่ใจหรือไม่ว่าต้องการปิดใช้งานบัญชีของคุณ? คุณจะไม่สามารถเข้าสู่ระบบได้อีก
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                <form action="{% url 'deactivate_account' %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">ยืนยัน, ปิดใช้งานบัญชี</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

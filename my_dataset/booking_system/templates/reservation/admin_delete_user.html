@@ -1,0 +1,28 @@
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Username</th>
+      <th>Email</th>
+      <th>Staff</th>
+      <th>Superuser</th>
+      <th>การจัดการ</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for user in users %}
+    <tr>
+      <td>{{ user.username }}</td>
+      <td>{{ user.email }}</td>
+      <td>{{ user.is_staff }}</td>
+      <td>{{ user.is_superuser }}</td>
+      <td>
+        <a href="{% url 'admin_delete_user' user.id %}" 
+           class="btn btn-sm btn-outline-danger"
+           onclick="return confirm('คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้นี้?');">
+           ลบ
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

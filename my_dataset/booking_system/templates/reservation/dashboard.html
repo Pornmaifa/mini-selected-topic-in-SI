@@ -1,0 +1,90 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Booking System</a>
+
+    <div class="d-flex align-items-center">
+      {% if request.user.is_staff %}
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-light me-2">แดชบอร์ดแอดมิน</a>
+      {% endif %}
+
+      <a href="{% url 'logout' %}" class="btn btn-danger me-3">ออกจากระบบ</a>
+
+      <a href="{% url 'profile' %}">
+            {% if request.user.profile.avatar %}
+            <img src="{{ request.user.profile.avatar.url }}" alt="avatar" class="rounded-circle" width="40" height="40">
+            {% else %}
+            <i class="bi bi-person-circle" style="font-size: 2rem; color: #ffffff;"></i>
+            {% endif %}
+      </a>
+    </div>
+  </div>
+</nav>
+<div class="container-fluid mt-4 px-4">
+    <!-- Search Form -->
+     <br>
+    <form method="get" class="d-flex mb-4 mx-auto" style="max-width: 600px;">
+        <input type="text" name="q" class="form-control me-2`" placeholder="ค้นหาสถานที่..." value="{{ request.GET.q }}">
+        <button type="submit" class="btn btn-primary mx-4">ค้นหา</button>
+    </form>
+
+    <!-- Messages -->
+     <br>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+<div class="container-fluid mt-4 px-4">
+<h2 class=" px-5">สถานที่</h2>
+
+<div class="bg-white  border p-4 rounded shadow-sm border">
+
+    <div class="row g-4">
+        {% for place in places %}
+            <div class="col-sm-6 col-md-4 col-lg-3"> 
+                <div class="card h-100 shadow-sm"> {% with first_image=place.images.first %}
+                        {% if first_image %}
+                            <a href="{% url 'location_detail' place.id %}">
+                                <img src="{{ first_image.image.url }}" class="card-img-top" style="width:100%; height:200px; object-fit:cover;">
+                            </a>
+                        {% else %}
+                            <a href="{% url 'location_detail' place.id %}">
+                                <img src="{% static 'images/default-place.png' %}" class="card-img-top" style="width:100%; height:200px; object-fit:cover;">
+                            </a>
+                        {% endif %}
+                    {% endwith %}
+
+                    <div class="card-body d-flex flex-column"> <h5 class="card-title">{{ place.name }}</h5>
+                        <p class="card-text">{{ place.description|truncatechars:100 }}</p>
+                        <p class="text-muted small mt-auto">รองรับ {{ place.capacity }} คน</p> </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <p class="text-center text-muted">ยังไม่มีสถานที่</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</div>
+</div>
+</body>
+</html>
